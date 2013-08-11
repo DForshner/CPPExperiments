@@ -3,7 +3,7 @@
 
 using namespace std;
 
-// Search array for existence of value using the binary search.
+// Search array for existence of value using binary search.
 // Each pass halves the searching space which gives the search
 // O(log n) performance.
 // Compiler: Microsoft Visual C++ Compiler Nov 2012 CTP (v120_CTP_Nov2012)
