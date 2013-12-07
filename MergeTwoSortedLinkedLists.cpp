@@ -38,7 +38,7 @@ shared_ptr<Node<T>> merge(shared_ptr<Node<T>> a, shared_ptr<Node<T>> b) {
   // If there are elements in both lists chose the smaller
   // of the element from the lists.
   shared_ptr<Node<T>> current = head;
-  while (a != nullptr && b != nullptr) {
+  while (a && b) {
     if (a->data <= b->data) {
       current->next = a;
       a = a->next;
@@ -52,14 +52,14 @@ shared_ptr<Node<T>> merge(shared_ptr<Node<T>> a, shared_ptr<Node<T>> b) {
   }
 
   // Add any remaining elements in list a.
-  while (a != nullptr) {
+  while (a) {
     current->next = a;
     a = a->next;
     current = current->next;
   }
 
   // Add any remaining elements in list b.
-  while (b != nullptr) {
+  while (b) {
     current->next = b;
     b = b->next;
     current = current->next;
@@ -69,13 +69,13 @@ shared_ptr<Node<T>> merge(shared_ptr<Node<T>> a, shared_ptr<Node<T>> b) {
 }
 
 template <typename T>
-const shared_ptr<Node<T>> to_linked_list(const vector<T>& vec)
+const shared_ptr<Node<T>> to_linked_list(const vector<T>* vec)
 {
-  shared_ptr<Node<T>> prev, head = nullptr;
-  for (const auto &value: vec) { // access by reference to avoid copying
+  shared_ptr<Node<T>> prev = nullptr, head = nullptr;
+  for (const auto &value: *vec) { // access by reference to avoid copying
     auto current = shared_ptr<Node<T>>(new Node<T>());
     current->data = value;
-    current->next = nullptr; // tail node will have next = nullptr.
+    current->next = nullptr; // current tail node always equal to nullptr.
 
     // If head node save for return else update the previous node.
     if (prev == nullptr)
@@ -90,9 +90,9 @@ const shared_ptr<Node<T>> to_linked_list(const vector<T>& vec)
 }
 
 template <typename T>
-void display(const shared_ptr<Node<T>> ptr) {
+void display(const shared_ptr<Node<T>>* ptr) {
   cout << endl << "[HEAD]->";
-  auto current = ptr;
+  auto current = *ptr;
   while (current) {
     cout << current->data << "->";
     current = current->next;
@@ -103,17 +103,17 @@ void display(const shared_ptr<Node<T>> ptr) {
 void main() {
   auto a = new vector<int> { 1, 3, 5, 6, 8, 9, };
   cout << endl << "List A";
-  auto list_a = to_linked_list(*a);
-  display(list_a);
+  auto list_a = to_linked_list(a);
+  display(&list_a);
 
   auto b = new vector<int> { 0, 2, 4, 7 };
   cout << endl << "List B";
-  auto list_b = to_linked_list(*b);
-  display(list_b);
+  auto list_b = to_linked_list(b);
+  display(&list_b);
 
   cout << endl << "Merged List";
   auto sorted = merge(list_a, list_b);
-  display(sorted);
+  display(&sorted);
 
   // Cleanup
   delete a;
