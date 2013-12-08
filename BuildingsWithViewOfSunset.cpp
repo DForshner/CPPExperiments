@@ -22,7 +22,7 @@ vector<Building> buildings_with_view_east_to_west(istringstream &ss) {
   while (ss >> height) {
     // Push the first building
     if (buildings.empty()) {
-      buildings.push_back(Building(height, index++));
+      buildings.emplace_back(height, index++);
       continue;
     }
 
@@ -30,7 +30,7 @@ vector<Building> buildings_with_view_east_to_west(istringstream &ss) {
     while (!buildings.empty() && height >= buildings.back().height)
       buildings.pop_back();
 
-    buildings.push_back(Building(height, index++));
+    buildings.emplace_back(height, index++);
   }
 
   return buildings;
@@ -44,13 +44,13 @@ vector<Building> buildings_with_view_west_to_east(istringstream &ss) {
   while (ss >> height) {
     // Push the first building
     if (buildings.empty()) {
-      buildings.push_back(Building(height, index++));
+      buildings.emplace_back(height, index++);
       continue;
     }
 
     // Only add to stack if building is greater than top
     if (!buildings.empty() && height > buildings.back().height)
-        buildings.push_back(Building(height, index++));
+        buildings.emplace_back(height, index++);
   }
 
   return buildings;
