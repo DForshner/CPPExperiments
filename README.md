@@ -1,4 +1,4 @@
 CPPExperiments
 ==============
 
-A motley assortment of snippets, language idioms, algorithms, and puzzles.
+A motley assortment of snippets, idioms, algorithms, and puzzles.
