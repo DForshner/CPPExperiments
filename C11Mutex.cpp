@@ -14,7 +14,8 @@ public:
 
     void increase(const std::string& message){
 
-		// When std::lock_guard<std::mutex> instance is created lock() is called on the mutex.  When destructed the lock is released.
+		// When std::lock_guard<std::mutex> instance is created lock() is called on the mutex.
+		// When destructed the lock is released.
 		std::lock_guard<std::mutex> guard(lock);
 
 		++counter;
