@@ -3,12 +3,10 @@
 #include <cassert>
 #include <list>
 #include <vector>
-#include <limits>
-#include <set>
-#include <functional>
 
 // Topologically sort a directed acyclic graph.
-// Complexity O(V + E)
+// Time Complexity O(V + E)
+// Space Complexity O(V)
 
 namespace TopologicalSortDAG {
 
@@ -28,16 +26,16 @@ namespace TopologicalSortDAG {
       std::vector<int> stack;
       stack.reserve(adj.size());
 
-      // If there is no starting node then there is nothing to sort.
-      auto start = findNodeWithZeroInDegree();
-      if (start == std::numeric_limits<int>::min())
-        return stack;
-
       // Mark all nodes as unvisited
       std::vector<bool> visited(adj.size());
       std::fill(visited.begin(), visited.end(), false);
 
-      sort(stack, visited, start);
+      // Visit every node in the graph 
+      for (const auto &v : adj) {
+        auto i = &v - &adj[0];
+        if (!visited[i])
+          sort(stack, visited, i);
+      }
 
       return stack;
     }
@@ -48,7 +46,7 @@ namespace TopologicalSortDAG {
     void sort(std::vector<int>& stack, std::vector<bool>& visited, int v) {
       visited[v] = true; // Mark node as visited
 
-      // Recursively sort all adjacent unvisited nodes
+      // Recursively sort all adjacent unvisited nodes adjacent to this one.
       for (const auto &u : adj[v]) {
         if (!visited[u])
           sort(stack, visited, u);
@@ -57,34 +55,6 @@ namespace TopologicalSortDAG {
       // Now that all of this node's neighbors have been visited push it onto stack. 
       stack.push_back(v);
     }
-
-    // Traverses entire graph to find a node with zero in-degree.
-    // Returns int::min if no node with zero in-degree found.
-    int findNodeWithZeroInDegree() {
-      std::set<int> indegrees;
-      for (const std::list<int>& vadj : adj) {
-        for (const int& v : vadj) {
-          if (indegrees.find(v) == indegrees.end())
-            indegrees.insert(v);
-        }
-      }
-
-      // If all of the nodes have incoming edges then there is cycle in the graph.
-      if (indegrees.size() >= adj.size())
-        throw std::exception("Cycle in DAG");
-
-      // If no nodes in graph
-      if (indegrees.size() == 0)
-        return std::numeric_limits<int>::min();
-
-      for (auto i = 0; i < adj.size(); i++) {
-        if (indegrees.find(i) == indegrees.end()) {
-          return i;
-        }
-      }
-
-      return std::numeric_limits<int>::min();
-    }
   };
 
   using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -92,9 +62,15 @@ namespace TopologicalSortDAG {
   TEST_CLASS(TopologicalSortDAGTests) {
   public:
     TEST_METHOD(WhenSortEmpty_ExpectEmptyReturned) {
-      Graph graph(100);
+      Graph graph(0);
       auto sorted = graph.topologicalSort();
       Assert::AreEqual(size_t(0), sorted.size());
+    }
+
+    TEST_METHOD(WhenSortOnlyUnconnectedNodes_ExpectAllNodesReturned) {
+      Graph graph(5);
+      auto sorted = graph.topologicalSort();
+      Assert::AreEqual(size_t(5), sorted.size());
     }
 
     TEST_METHOD(WhenSortLinearDep_ExpectLinearDepReturned) {
@@ -134,15 +110,6 @@ namespace TopologicalSortDAG {
       graph.insert(1, 0);
       auto sorted = graph.topologicalSort();
       Assert::AreEqual(0, sorted[0]);
-    }
-
-    TEST_METHOD(WhenCycle_ExpectException) {
-      Graph graph(3);
-      graph.insert(2, 1);
-      graph.insert(1, 0);
-      graph.insert(0, 2);
-      std::function<std::vector<int>(void)> f1 = std::bind(&Graph::topologicalSort, graph);
-      Assert::ExpectException<std::exception>(f1);
     }
   };
 }
